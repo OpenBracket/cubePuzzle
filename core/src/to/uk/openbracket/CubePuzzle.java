@@ -1,27 +1,60 @@
 package to.uk.openbracket;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 
 public class CubePuzzle extends ApplicationAdapter {
+	
+	private OrthographicCamera cam;
+	
+	public static double GRAVITY = -0.3;
+	
 	SpriteBatch batch;
-	Texture img;
+	
+	public Player player;
+	
+	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	int scrnWidth = gd.getDisplayMode().getWidth();
+	int scrnHeight = gd.getDisplayMode().getHeight();
 	
 	@Override
 	public void create () {
+		
+		cam = new OrthographicCamera();
+		cam.setToOrtho(false, scrnWidth, scrnHeight);
+		
+		player = new Player(0,1080,64,64,0);
+		player.x = scrnWidth/2 -player.w/2;
+		
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+	}
+	
+	public void update() {
+		
+		player.update();
+		
+		//collision detection 
+		/*if(player.x < 0) player.x = 0;
+		if(player.x > scrnWidth - 128) player.x = scrnWidth - 128;*/
+		
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		update();
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+		player.render(batch, cam);
+		cam.update();
+		
 	}
 }
